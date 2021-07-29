@@ -1,0 +1,28 @@
+version: '3'
+services:
+    postgres:
+        image: postgres:12.1
+        ports:
+            - "5432:5432"
+        environment:
+            POSTGRES_PASSWORD: mypassword
+        volumes:
+            - ./postgresql/data:/var/lib/postgresql/data
+    web:
+        build:
+            context: ./web
+            dockerfile: Dockerfile.dev
+        volumes:
+            - /app/node_modules
+            - ./web:/app
+        ports:
+            - "3000:3000"
+    server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile.dev
+        volumes:
+            - /node_modules
+            - ./server/src:/app/src
+        ports:
+            - "8080:8080"
