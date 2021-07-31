@@ -1,14 +1,38 @@
 version: '3'
 services:
     postgres:
+        container_name: "postgres"
         image: postgres:12.1
         ports:
             - "5432:5432"
         environment:
-            POSTGRES_PASSWORD: mypassword
+            - POSTGRES_USER=root
+            - POSTGRES_DB=postgres
+            - POSTGRES_PASSWORD=root
+            - POSTGRES_HOST_AUTH_METHOD=trust
         volumes:
             - ./postgresql/data:/var/lib/postgresql/data
+            - ./create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+        restart: always
+        networks: 
+            - network
+
+    pg4:
+        container_name: "pgadmin4"
+        depends_on:
+            - postgres
+        image: dpage/pgadmin4
+        restart: always
+        environment:
+            PGADMIN_DEFAULT_EMAIL: admin@admin.com
+            PGADMIN_DEFAULT_PASSWORD: admin
+        ports:
+            - "9001:80"
+        networks: 
+            - network
+
     web:
+        container_name: "web"
         build:
             context: ./web
             dockerfile: Dockerfile.dev
@@ -17,7 +41,13 @@ services:
             - ./web:/app
         ports:
             - "3000:3000"
+        networks: 
+            - network
+
     server:
+        container_name: "server"
+        depends_on:
+            - postgres
         build:
             context: ./server
             dockerfile: Dockerfile.dev
@@ -26,3 +56,12 @@ services:
             - ./server/src:/app/src
         ports:
             - "8080:8080"
+        restart: always
+        networks: 
+            - network
+
+networks: 
+    network:
+
+volumes: 
+    db_data:
