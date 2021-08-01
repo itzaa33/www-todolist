@@ -1,29 +1,50 @@
+import React, { useState, useEffect } from "react";
+import ToDo from "./components/CreatToDo";
+import SubTask from "./components/SubTask/index";
+import axios from "axios";
 
-import Comp from './components/eiei'
-import logo from "./logo.svg";
-import "./App.css";
+export type dataToDoType = {
+  id: number;
+  title: string;
+  status: boolean;
+  created_at: string;
+};
 
-function App() {
+const Comp: React.FC<any> = () => {
+  const [lists, setLists] = useState<Array<dataToDoType>>([]);
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    const result = await axios.get("http://localhost:8080/get/todos");
+    if(!!result?.data && result.data.length > 0)
+    {
+      setLists(result.data);
+    }
+  };
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Comp/>
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h1> To do App</h1>
+      <ToDo setLists={setLists} />
+      <div>
+        {lists?.map((data, key) => {
+          return (
+            <div key={key}>
+              <SubTask 
+                id={data.id} 
+                title ={data.title}
+                status={data.status} 
+                listsTodo={lists}
+              />
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
-}
+};
 
-export default App;
+export default Comp;

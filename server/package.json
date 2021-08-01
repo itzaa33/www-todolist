@@ -3,19 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "app.js",
-  "nodemonConfig": {
-    "watch": [
-      "server"
-    ],
-    "ext": "ts",
-    "ignore": [
-      "*.test.ts"
-    ],
-    "delay": "3",
-    "execMap": {
-      "ts": "ts-node"
-    }
-  },
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
@@ -25,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-generator": "^4.16.1",

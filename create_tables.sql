@@ -9,10 +9,11 @@
 --   CONNECTION LIMIT = -1;
 
 -- Creation of task table
-CREATE TABLE IF NOT EXISTS task (
+CREATE TABLE IF NOT EXISTS todo (
   id SERIAL NOT NULL ,
   title varchar(450),
-  status_task boolean NOT NULL,
+  status boolean NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id)
 );
 
@@ -20,9 +21,10 @@ CREATE TABLE IF NOT EXISTS task (
 CREATE TABLE IF NOT EXISTS subtask (
   id SERIAL NOT NULL,
   title varchar(450),
-  status_subtask boolean NOT NULL,
+  status boolean NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id),
-  id_task INT NOT NULL,
-      FOREIGN KEY(id_task) 
-	  REFERENCES task(id)
+  todo_id INT NOT NULL,
+      FOREIGN KEY(todo_id) 
+	  REFERENCES todo(id)
 );
