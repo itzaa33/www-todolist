@@ -3,10 +3,12 @@ import ToDo from "./components/CreatToDo";
 import SubTask from "./components/SubTask/index";
 import axios from "axios";
 
+import Container from "@material-ui/core/Container";
+
 export type dataToDoType = {
   id: number;
   title: string;
-  status: boolean;
+  status: "pending" | "completed";
   created_at: string;
 };
 
@@ -19,31 +21,29 @@ const Comp: React.FC<any> = () => {
 
   const getData = async () => {
     const result = await axios.get("http://localhost:8080/get/todos");
-    if(!!result?.data && result.data.length > 0)
-    {
+    if (!!result?.data && result.data.length > 0) {
       setLists(result.data);
     }
   };
 
   return (
-    <div>
+    <Container maxWidth="sm">
       <h1> To do App</h1>
       <ToDo setLists={setLists} />
-      <div>
+      <div style={{ padding:"0px 8px"}}>
         {lists?.map((data, key) => {
           return (
-            <div key={key}>
-              <SubTask 
-                id={data.id} 
-                title ={data.title}
-                status={data.status} 
-                listsTodo={lists}
-              />
-            </div>
+            <SubTask
+              key={key}
+              id={data.id}
+              title={data.title}
+              status={data.status}
+              listsTodo={lists}
+            />
           );
         })}
       </div>
-    </div>
+    </Container>
   );
 };
 

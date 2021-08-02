@@ -11,8 +11,8 @@
 -- Creation of task table
 CREATE TABLE IF NOT EXISTS todo (
   id SERIAL NOT NULL ,
-  title varchar(450),
-  status boolean NOT NULL,
+  title varchar(450) NOT NULL,
+  status varchar(450) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id)
 );
@@ -20,8 +20,8 @@ CREATE TABLE IF NOT EXISTS todo (
 -- Creation of subtask table
 CREATE TABLE IF NOT EXISTS subtask (
   id SERIAL NOT NULL,
-  title varchar(450),
-  status boolean NOT NULL,
+  title varchar(450) NOT NULL,
+  status varchar(450) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id),
   todo_id INT NOT NULL,
