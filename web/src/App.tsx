@@ -14,6 +14,7 @@ export type dataToDoType = {
 
 const Comp: React.FC<any> = () => {
   const [lists, setLists] = useState<Array<dataToDoType>>([]);
+  const [openAccordion,setOpenAccordion] = useState<string>('')
 
   useEffect(() => {
     getData();
@@ -30,8 +31,8 @@ const Comp: React.FC<any> = () => {
     <Container maxWidth="sm">
       <h1> To do App</h1>
       <ToDo setLists={setLists} />
-      <div style={{ padding:"0px 8px"}}>
-        {lists?.map((data, key) => {
+      <div style={{ padding: "0px 8px" }}>
+        {!!lists && lists?.map((data, key) => {
           return (
             <SubTask
               key={key}
@@ -39,6 +40,9 @@ const Comp: React.FC<any> = () => {
               title={data.title}
               status={data.status}
               listsTodo={lists}
+              accordion={"accordion"+key}
+              openAccordion={openAccordion}
+              setOpenAccordion={setOpenAccordion}
             />
           );
         })}

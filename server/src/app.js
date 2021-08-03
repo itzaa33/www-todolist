@@ -37,7 +37,7 @@ app.post("/insert/todo", async (req, res) => {
 
   await pool.query(
     `insert into todo (title,status) values ($1,$2)`,
-    [title,"pending"],
+    [title, "pending"],
     (error, results) => {
       if (error) {
         throw error;
@@ -73,28 +73,15 @@ app.post("/insert/subtask", async (req, res) => {
   const todo_id = req.body.todo_id ? req.body.todo_id : null;
 
   if (!!title && !!todo_id) {
-    const row = await pool.query(
-      `select * from subtask where id = $1`,
-      [todo_id],
+    await pool.query(
+      `insert into subtask (title, todo_id, status) values ($1, $2,  $3)`,
+      [title, todo_id, "pending"],
       (error, results) => {
         if (error) {
           throw error;
         }
-        return results.rowCount;
       }
     );
-
-    if (row <= 5) {
-      await pool.query(
-        `insert into subtask (title, todo_id, status) values ($1, $2,  $3)`,
-        [title, todo_id, "pending"],
-        (error, results) => {
-          if (error) {
-            throw error;
-          }
-        }
-      );
-    }
   }
 
   res.sendStatus(200);
@@ -103,9 +90,9 @@ app.post("/insert/subtask", async (req, res) => {
 //Update subtasks
 app.put("/update/subtask_status", async (req, res) => {
   const id = !!req.body.id ? req.body.id : null;
-  const status = req.body.status;
+  const status = !!req.body.status ? req.body.status : null;
 
-  if (!!id && typeof status === "boolean") {
+  if (!!id && (status === "pending" || status === "completed")) {
     await pool.query(
       `update subtask set status = $1 where id = $2`,
       [status, id],

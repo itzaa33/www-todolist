@@ -35,8 +35,8 @@ const Comp: React.FC<Props> = ({ setLists }) => {
   return (
     <TextField
       id="outlined-full-width"
-      label="Label"
-      placeholder="Placeholder"
+      label="ToDo"
+      placeholder="What to do?"
       fullWidth
       margin="normal"
       InputLabelProps={{
