@@ -1,1 +1,1 @@
-# www-todolist
+run command "docker-compose up" in folder "www-todolist"
