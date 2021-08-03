@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { dataToDoType } from "../../App";
 import Item from "./Item";
 import axios from "axios";
+import GreenCheckbox from "../GrennCheckBox"
 
 import TextField from "@material-ui/core/TextField";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
-import AccordionDetails from "@material-ui/core/AccordionDetails";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
@@ -43,6 +43,8 @@ const Comp: React.FC<Props> = ({
 }) => {
   const [titleSubTask, setTitleSubTask] = useState<string>("");
   const [listsSubTask, setListsSubTask] = useState<Array<dataSubTaskType>>([]);
+  const [rowSubTask, setRowSubTask] = useState<number>(0);
+  const [completedSubTask, setCompletedSubTask] = useState<number>(0);
 
   const handleChangeAccordion = (value: string) => {
     if (value === openAccordion) {
@@ -58,8 +60,9 @@ const Comp: React.FC<Props> = ({
     setTitleSubTask(element.target.value);
   };
 
-  const submitInsertSubTask = async (e: React.KeyboardEvent<HTMLDivElement>) => {
-    
+  const submitInsertSubTask = async (
+    e: React.KeyboardEvent<HTMLDivElement>
+  ) => {
     if (!!titleSubTask && e.key === "Enter") {
       await axios.post("http://localhost:8080/insert/subtask", {
         title: titleSubTask,
@@ -75,13 +78,29 @@ const Comp: React.FC<Props> = ({
     const result = await axios.get(
       "http://localhost:8080/get/subtasks?id=" + id
     );
-    if (!!result?.data && result.data.length > 0) {
+    if (!!result?.data) {
       setListsSubTask(result.data);
+    }
+  };
+
+  const handleDescriptionSubTask = () => {
+    if (!!listsSubTask && listsSubTask.length > 0) {
+      const row = listsSubTask.length;
+      const completed = listsSubTask.filter((value: dataSubTaskType) => {
+        return value.status === "completed";
+      }).length;
+
+      setRowSubTask(row);
+      setCompletedSubTask(completed);
+    } else {
+      setRowSubTask(0);
+      setCompletedSubTask(0);
     }
   };
 
   useEffect(() => {
     getData();
+    handleDescriptionSubTask();
   }, [listsTodo, listsSubTask]);
 
   return (
@@ -101,7 +120,7 @@ const Comp: React.FC<Props> = ({
             onClick={(event) => event.stopPropagation()}
             onFocus={(event) => event.stopPropagation()}
             control={
-              <Checkbox
+              <GreenCheckbox
                 checked={accordion === openAccordion}
                 onChange={() => handleChangeAccordion(accordion)}
               />
@@ -109,20 +128,26 @@ const Comp: React.FC<Props> = ({
             label={title}
           />
         )}
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "flex-end",
+            alignItems: "flex-end",
+          }}
+        >
+          {`${completedSubTask} of ${rowSubTask} completed`}
+        </div>
       </AccordionSummary>
       {!!listsSubTask &&
         listsSubTask?.map((value, key) => {
-          return (
-            <AccordionDetails key={key} style={{padding:"0 40px",height:56}}>
-              <Item {...value} />
-            </AccordionDetails>
-          );
+          return <Item {...value} key={key} />;
         })}
       <div style={{ padding: "16px" }}>
         <TextField
           id="outlined-full-width"
           label="SubTask"
-          placeholder="What to do?"
+          placeholder="What are the step?"
           fullWidth
           margin="normal"
           InputLabelProps={{

@@ -1,15 +1,16 @@
-var express = require("express");
-var cors = require("cors");
-const bp = require("body-parser");
-const { Pool } = require("pg");
 
-const app = express();
+import express, { Application, Request, Response } from 'express';
+import cors from "cors";
+import bp from "body-parser";
+import { Pool } from "pg";
+
+const app: Application = express();
 
 app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 
-const pool = new Pool({
+const pool:Pool = new Pool({
   host: "postgres",
   user: "root",
   password: "root",
@@ -18,7 +19,7 @@ const pool = new Pool({
 });
 
 // Get Todo
-app.get("/get/todos", async (req, res) => {
+app.get("/get/todos", async (req: Request, res: Response) => {
   await pool.query(
     "select * from todo order by created_at DESC",
     (error, results) => {
@@ -32,7 +33,7 @@ app.get("/get/todos", async (req, res) => {
 });
 
 // Insert Todo
-app.post("/insert/todo", async (req, res) => {
+app.post("/insert/todo", async (req: Request, res: Response) => {
   const title = req.body.title ? req.body.title : null;
 
   await pool.query(
@@ -48,8 +49,28 @@ app.post("/insert/todo", async (req, res) => {
   res.sendStatus(200);
 });
 
+// Update Todo
+app.put("/update/todo", async (req: Request, res: Response) => {
+  const id = req.body.id ? req.body.id : null;
+  const status = !!req.body.status ? req.body.status : null;
+
+  if (!!id && (status === "pending" || status === "completed")) {
+    await pool.query(
+      `update todo set status = $1 where id = $2`,
+      [status, id],
+      (error, results) => {
+        if (error) {
+          throw error;
+        }
+      }
+    );
+  }
+
+  res.sendStatus(200);
+});
+
 // Get Subtask Where Todo id
-app.get("/get/subtasks", async (req, res) => {
+app.get("/get/subtasks", async (req: Request, res: Response) => {
   const id = req.query.id ? req.query.id : null;
   if (!!id) {
     await pool.query(
@@ -68,7 +89,7 @@ app.get("/get/subtasks", async (req, res) => {
 });
 
 //Insert subtasks
-app.post("/insert/subtask", async (req, res) => {
+app.post("/insert/subtask", async (req: Request, res: Response) => {
   const title = req.body.title ? req.body.title : null;
   const todo_id = req.body.todo_id ? req.body.todo_id : null;
 
@@ -88,7 +109,7 @@ app.post("/insert/subtask", async (req, res) => {
 });
 
 //Update subtasks
-app.put("/update/subtask_status", async (req, res) => {
+app.put("/update/subtask_status", async (req: Request, res: Response) => {
   const id = !!req.body.id ? req.body.id : null;
   const status = !!req.body.status ? req.body.status : null;
 
